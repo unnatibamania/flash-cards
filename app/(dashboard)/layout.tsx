@@ -1,27 +1,21 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/Navbar/Navbar";
+
+import { Aside } from "@/components/Sidebar/Aside";
 
 
 
-import { useAuth } from "@clerk/nextjs";
-
-export default function Layout() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   // const router = useRouter();
 
-  const { signOut, userId } = useAuth();
-
-  
-  const router = useRouter();
-  console.log(userId);
-
-  return <div>
-    hii
-
-    <button onClick={() => {
-      router.push("/signin");
-      signOut()}}>
-      Logout 
-    </button>
-  </div>;
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <Aside sets={0} draftSets={0} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Navbar />
+        {children}
+      </div>
+    </div>
+  );
 }

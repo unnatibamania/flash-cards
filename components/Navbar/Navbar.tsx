@@ -65,8 +65,8 @@ export const Navbar = () => {
             </div>
 
             <Button
-              onClick={() => {
-                signOut();
+              onClick={async () => {
+                await signOut();
                 router.push("/signin");
               }}
             >

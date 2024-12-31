@@ -2,7 +2,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Save, DraftingCompass } from "lucide-react";
 
-export const SetDetails = () => {
+export const SetDetails = ({isPublic, setIsPublic}: {isPublic: boolean, setIsPublic: (isPublic: boolean) => void} ) => {
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex bg-white shadow-sm p-4  rounded-xl justify-between">
@@ -15,7 +15,7 @@ export const SetDetails = () => {
           </p>
         </div>
 
-        <Switch />
+        <Switch checked={isPublic} onCheckedChange={setIsPublic} />
 
         {/* <Button variant="outline">Create Link</Button> */}
       </div>

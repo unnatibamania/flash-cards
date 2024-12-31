@@ -10,9 +10,8 @@ import { SetInfo } from "@/components/CreationFlow/SetInfo";
 import { SetDetails } from "@/components/CreationFlow/SetDetails";
 import { Paperclip, File, X } from "lucide-react";
 import { Loader2 } from "lucide-react";
-import { CardData } from "@/types/card";
-
 import axios from "axios";
+import { CardData } from "@/types/card";
 
 const AICards = () => {
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
@@ -61,7 +60,6 @@ const AICards = () => {
 
       setCards(transformedCards);
       setCurrentIndex(0); // Reset to first card
-
     }
 
     setUploadFiles([]);
@@ -73,26 +71,43 @@ const AICards = () => {
   return (
     <div className="flex flex-col bg-gray-50 h-full s w-full p-3 overflow-hidden gap-4">
       <div className="flex flex-col justify-between w-full items-center border border-gray-400 p-4 border-dashed h-full rounded-2xl gap-4">
-        <div className="grid grid-cols-3 w-full gap-4">
-          <SetInfo
-            setTitle={setTitle}
-            setDescription={setDescription}
-            setTags={setTags}
-            title={title}
-            description={description}
-            tags={tags}
-          />
-          <div className="flex flex-col gap-4">
-            <CardView
+        {cards.length > 0 ? (
+          <div className="grid grid-cols-3 w-full gap-4">
+            <SetInfo
+              setTitle={setTitle}
+              setDescription={setDescription}
+              setTags={setTags}
+              title={title}
+              description={description}
+              tags={tags}
+            />
+            <div className="flex flex-col gap-4">
+              <CardView
+                cards={cards}
+                setCards={setCards}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+              />
+            </div>
+
+            <SetDetails
+              title={title}
+              description={description}
+              tags={tags}
               cards={cards}
-              setCards={setCards}
-              currentIndex={currentIndex}
-              setCurrentIndex={setCurrentIndex}
+              isPublic={isPublic}
+              setIsPublic={setIsPublic}
             />
           </div>
-
-          <SetDetails isPublic={isPublic} setIsPublic={setIsPublic} />
-        </div>
+        ) : isLoading ? (
+          <div className="flex flex-col gap-4">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </div>
+        ) : (
+          <div>
+            Daal bhai file daal
+          </div>
+        )}
 
         <div className="flex w-full bg-white rounded-xl p-3 flex-col gap-4">
           {uploadFiles.map((file) => (

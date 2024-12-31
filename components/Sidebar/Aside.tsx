@@ -1,8 +1,7 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 
-
+import axios from "axios";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -16,15 +15,21 @@ import {
   Zap,
 } from "lucide-react";
 
-export const Aside = ({
-  sets,
-  draftSets,
-}: {
-  sets: number;
-  draftSets: number;
-}) => {
+import { useQuery } from "@tanstack/react-query";
+
+export const Aside = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const { data: setList } = useQuery({
+    queryKey: ["sets"],
+    queryFn: () => axios.get("/api/set").then((res) => res.data),
+  });
+
+  const { data: draftSets } = useQuery({
+    queryKey: ["drafts"],
+    queryFn: () => axios.get("/api/draft").then((res) => res.data),
+  });
 
   return (
     <aside className="flex flex-col border min-w-56 justify-between">
@@ -57,7 +62,9 @@ export const Aside = ({
               <span>Drafts</span>
             </div>
 
-            <p>{draftSets}</p>
+            {draftSets?.length > 0 ? (
+              <p className="">{draftSets?.length}</p>
+            ) : null}
           </Button>
 
           <Button
@@ -73,7 +80,7 @@ export const Aside = ({
               <span>My sets</span>
             </div>
 
-            <p>{sets}</p>
+            {setList?.length > 0 ? <p className="">{setList?.length}</p> : null}
           </Button>
         </section>
       </div>

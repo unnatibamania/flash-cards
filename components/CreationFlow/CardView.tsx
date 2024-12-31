@@ -144,6 +144,7 @@ export const CardView = ({
       answer: "",
       tags: [],
       order: cards?.length + 1,
+      is_visited: false,
     };
 
     setCards([...cards, newCard]);

@@ -5,7 +5,6 @@ export type CardData = {
   question: string;
   answer: string;
   tags: string[];
-  image?: string;
   order: number;
 };
 
@@ -14,6 +13,5 @@ export const formCardSchema: ZodType<CardData> = z.object({
   question: z.string().min(1, { message: "Question is required" }),
   answer: z.string().min(1, { message: "Answer is required" }),
   tags: z.array(z.string()),
-  image: z.string().optional(),
   order: z.number(),
 });

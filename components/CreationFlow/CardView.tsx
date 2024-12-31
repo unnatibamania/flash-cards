@@ -60,7 +60,6 @@ export const CardView = ({
       question: cards[currentIndex]?.question || "",
       answer: cards[currentIndex]?.answer || "",
       tags: cards[currentIndex]?.tags || [],
-      image: cards[currentIndex]?.image,
     },
   });
 
@@ -84,33 +83,39 @@ export const CardView = ({
 
   useEffect(() => {
     const subscription = form.watch((formData) => {
-      if (formData) {
-        // Skip updating cards if the form data matches the current card
-        const currentCard = cards[currentIndex];
-        if (
-          currentCard?.question === formData.question &&
-          currentCard?.answer === formData.answer &&
-          JSON.stringify(currentCard?.tags) === JSON.stringify(formData.tags) &&
-          currentCard?.image === formData.image
-        ) {
-          return;
-        }
-
-        const updatedCards = cards.map((card, index) => {
-          if (index === currentIndex) {
-            return {
-              ...card,
-              ...formData,
-            };
-          }
-          return card;
-        });
-        setCards(updatedCards as CardData[]);
+      if (!formData) return;
+      
+      // Get the current form values
+      const currentFormValues = form.getValues();
+      
+      // Skip updating cards if any of the values are undefined
+      if (!currentFormValues.question || !currentFormValues.answer || !currentFormValues.tags) {
+        return;
       }
+
+      // Skip updating cards if the form data matches the current card
+      const currentCard = cards[currentIndex];
+      if (
+        currentCard &&
+        currentCard.question === currentFormValues.question &&
+        currentCard.answer === currentFormValues.answer &&
+        JSON.stringify(currentCard.tags) === JSON.stringify(currentFormValues.tags)
+      ) {
+        return;
+      }
+
+      const updatedCards = [...cards];
+      updatedCards[currentIndex] = {
+        ...cards[currentIndex],
+        ...currentFormValues,
+      };
+      setCards(updatedCards as CardData[]);
     });
 
     return () => subscription.unsubscribe();
-  }, [currentIndex, form, cards, setCards]);
+  }, [currentIndex, cards, setCards]);
+
+;
 
   // Update form when current index changes
   useEffect(() => {
@@ -120,8 +125,7 @@ export const CardView = ({
     if (
       currentCard?.question === formValues.question &&
       currentCard?.answer === formValues.answer &&
-      JSON.stringify(currentCard?.tags) === JSON.stringify(formValues.tags) &&
-      currentCard?.image === formValues.image
+      JSON.stringify(currentCard?.tags) === JSON.stringify(formValues.tags)
     ) {
       return;
     }
@@ -130,7 +134,6 @@ export const CardView = ({
       question: currentCard?.question || "",
       answer: currentCard?.answer || "",
       tags: currentCard?.tags || [],
-      image: currentCard?.image,
     });
   }, [currentIndex, cards, form]);
 
@@ -140,7 +143,6 @@ export const CardView = ({
       question: "",
       answer: "",
       tags: [],
-      image: "",
       order: cards?.length + 1,
     };
 

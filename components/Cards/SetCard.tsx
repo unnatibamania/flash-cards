@@ -31,8 +31,8 @@ export const SetCard = ({ set,  }: { set: SetData; }) => {
       className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4"
     >
       <div className="flex flex-col">
-        <h2 className="text-lg font-bold">{set.title}</h2>
-        <p className="text-xs text-gray-500">{set.description}</p>
+        <h2 className="text-lg font-bold">{set?.title}</h2>
+        <p className="text-xs text-gray-500">{set?.description}</p>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -73,7 +73,7 @@ export const SetCard = ({ set,  }: { set: SetData; }) => {
         <Button
           variant="outline"
           onClick={() => {
-            router.push(`/cards/${set.id}`);
+            router.push(`/set/${set.id}`);
           }}
         >
           Continue

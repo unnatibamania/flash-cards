@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
-export const SetCard = ({ set, index }: { set: SetData; index: number }) => {
+export const SetCard = ({ set,  }: { set: SetData; }) => {
   const router = useRouter();
  
   const { data: cardsList } = useQuery({
@@ -28,7 +28,6 @@ export const SetCard = ({ set, index }: { set: SetData; index: number }) => {
  
   return (
     <div
-      key={index}
       className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4"
     >
       <div className="flex flex-col">

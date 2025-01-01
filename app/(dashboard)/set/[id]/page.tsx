@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 import { Pill } from "@/components/Pill/Pill";
+
 // import { Card } from "@/types/cards";
 // import { Set } from "@/types/set";
 
@@ -57,7 +58,9 @@ const CardSet = () => {
     queryFn: () => axios.get(`/api/set/${id}`).then((res) => res.data),
   });
 
-  console.log({ cards });
+  const handleCardVisited = async (id: string) => {
+    await axios.post(`/api/card/visited/${id}`);
+  };
 
   if (cardsLoading) return <div>Loading...</div>;
 
@@ -65,9 +68,9 @@ const CardSet = () => {
     <div className="flex h-full w-full justify-center">
       <div className="max-w-3xl w-full p-8 flex gap-4 flex-col">
         <section className="flex flex-col">
-          <h1 className="text-2xl font-semibold">{set?.title}</h1>
+          <h1 className="text-2xl font-semibold">{set[0]?.title}</h1>
 
-          <p className="text-md text-gray-400">{set?.description}</p>
+          <p className="text-md text-gray-400">{set[0]?.description}</p>
         </section>
 
         <div
@@ -146,7 +149,8 @@ const CardSet = () => {
 
             <Button
               disabled={currentCardIndex === cards.length - 1}
-              onClick={() => {
+              onClick={async () => {
+                await handleCardVisited(cards[currentCardIndex].id);
                 goToNextCard();
               }}
               className="rounded-full"

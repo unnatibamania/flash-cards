@@ -1,14 +1,56 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { UseFormReturn } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 
-export const SetInfo = ({setTitle, setDescription, setTags, title, description, tags}: {setTitle: (title: string) => void, setDescription: (description: string) => void, setTags: (tags: string[]) => void, title: string, description: string, tags: string[]}) => {
+import { SetFormValues } from "@/app/(dashboard)/create/page";
+
+export const SetInfo = ({ form }: { form: UseFormReturn<SetFormValues> }) => {
   return (
     <section className="flex  flex-col gap-4">
-      <Input placeholder="Title" onChange={(e) => setTitle(e.target.value)} value={title} />
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Input placeholder="Title" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-      <Textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} value={description} />
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Textarea placeholder="Description" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-      <Input placeholder="Tags" onChange={(e) => setTags(e.target.value.split(','))} value={tags.join(',')} />
+      <FormField
+        control={form.control}
+        name="tags"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Input placeholder="Tags" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="flex flex-wrap gap-2">
         {/* {tags.map((tag) => (
       <Pill

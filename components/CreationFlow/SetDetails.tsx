@@ -1,55 +1,66 @@
 "use client";
 
+import { SetFormValues } from "@/app/(dashboard)/create/page";
+
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Save, DraftingCompass } from "lucide-react";
 import { CardData } from "@/types/card";
+import { UseFormReturn } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+
 
 import { useRouter } from "next/navigation";
 
 import axios from "axios";
 
-export const SetDetails = ({
-  title,
-  description,
-  tags,
-  cards,
-  isPublic,
-  setIsPublic,
-}: {
-  title: string;
-  description: string;
-  tags: string[];
-  cards: CardData[];
-  isPublic: boolean;
-  setIsPublic: (isPublic: boolean) => void;
-}) => {
+export const SetDetails = ({form, isPublic, setIsPublic, cards}: {form: UseFormReturn<SetFormValues>, isPublic: boolean, setIsPublic: (isPublic: boolean) => void, cards: CardData[]}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDraftLoading, setIsDraftLoading] = useState(false)
   
   const router = useRouter();
 
-  const handleCreateSet = async ({isDraft}: {isDraft: boolean}) => {
-    setIsLoading(true);
+  const { toast } = useToast();
 
+
+  const handleCreateSet = async ({isDraft}: {isDraft: boolean}) => {
+    
+    const result = await form.trigger();
+    if (!result) {
+      setIsLoading(false);
+      setIsDraftLoading(false);
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    
     if(isDraft) {
       setIsDraftLoading(true);
     }
 
     try {
       const {data} = await axios.post("/api/set", {
-        title,
-        description,
-        tags,
+        title: form.getValues("title"),
+        description: form.getValues("description"),
+        tags: form.getValues("tags"),
         is_public: isPublic,
         is_draft: isDraft,
       });
 
+      console.log({
+        id: data.id,
+        data
+      })
+
        await axios.post("/api/card", {
         cards_list: cards,
-        set_id: data.id,
+        set_id: data[0].id,
       })
 
      

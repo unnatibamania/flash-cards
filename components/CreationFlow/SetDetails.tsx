@@ -47,13 +47,12 @@ export const SetDetails = ({
         is_draft: isDraft,
       });
 
-      const {data: cardsData} = await axios.post("/api/card", {
+       await axios.post("/api/card", {
         cards_list: cards,
         set_id: data.id,
       })
 
-      console.log(cardsData);
-
+     
       if(isDraft){
         router.push('/drafts');
       }else{

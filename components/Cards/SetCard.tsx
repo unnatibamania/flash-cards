@@ -25,8 +25,7 @@ export const SetCard = ({ set, index }: { set: SetData; index: number }) => {
 
   const percentage = (visitedCards?.length / cardsList?.length) * 100;
   
-  console.log({cardsList, setId: set.id})
-
+ 
   return (
     <div
       key={index}

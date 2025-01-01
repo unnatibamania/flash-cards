@@ -40,11 +40,9 @@ const AICards = () => {
         inputText,
       });
 
-      console.log({ aiData: aiData[0].text.value });
       const parsedData = JSON.parse(aiData[0].text.value);
 
-      console.log({ parsedData });
-
+    
       setTitle(parsedData.set_title);
       setDescription(parsedData.set_description);
       setTags(parsedData.set_tags);

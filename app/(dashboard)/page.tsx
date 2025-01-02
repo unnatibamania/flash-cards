@@ -9,8 +9,9 @@ import { SetToJoin } from "@/components/Cards/SetToJoin";
 import { SetData } from "@/types/set";
 
 export default function Home() {
+
   const { data } = useQuery({
-    queryKey: ["sets"],
+    queryKey: ["popular-sets"],
     queryFn: () => fetch("/api/popular").then((res) => res.json()),
   });
 

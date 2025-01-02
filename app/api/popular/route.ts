@@ -22,8 +22,7 @@ export async function GET() {
       )
       .orderBy(desc(sets.users_enrolled));
 
-    console.log({ popularSets });
-
+   
     return new Response(JSON.stringify(popularSets), { status: 200 });
   } catch (error) {
     console.error(error);

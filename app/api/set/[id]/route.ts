@@ -14,6 +14,5 @@ export async function GET(
  
   const set = await db.select().from(sets).where(eq(sets.id, id));
 
-  console.log({set});
   return new Response(JSON.stringify(set), { status: 200 });
 }

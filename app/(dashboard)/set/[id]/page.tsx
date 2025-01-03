@@ -68,9 +68,9 @@ const CardSet = () => {
     <div className="flex h-full w-full justify-center">
       <div className="max-w-3xl w-full p-8 flex gap-4 flex-col">
         <section className="flex flex-col">
-          <h1 className="text-2xl font-semibold">{set[0]?.title}</h1>
+          <h1 className="text-2xl font-semibold">{set?.[0]?.title}</h1>
 
-          <p className="text-md text-gray-400">{set[0]?.description}</p>
+          <p className="text-md text-gray-400">{set?.[0]?.description}</p>
         </section>
 
         <div

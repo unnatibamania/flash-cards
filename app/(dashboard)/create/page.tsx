@@ -11,6 +11,7 @@ import { SetDetails } from "@/components/CreationFlow/SetDetails";
 import { Paperclip, File, X } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 import { CardData } from "@/types/card";
 
 import { z } from "zod";
@@ -41,8 +42,24 @@ const AICards = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
+  const { toast } = useToast();
+
   const handleSend = async () => {
+    const totalFileSize = uploadFiles.reduce((acc, file) => acc + file.size, 0);
+
+
+    if (totalFileSize > 5000000) {
+      toast({
+        title: "File size too large",
+        description: "Please upload a smaller file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // return;
     setIsLoading(true);
+
     if (uploadFiles.length > 0) {
       const formData = new FormData();
       formData.append("file", uploadFiles[0]);
@@ -59,6 +76,7 @@ const AICards = () => {
       form.setValue("title", parsedData.set_title);
       form.setValue("description", parsedData.set_description);
       form.setValue("tags", parsedData.set_tags);
+
       const transformedCards = parsedData.set_cards.map(
         (card: CardData, index: number) => ({
           id: uuidv4(),
@@ -121,14 +139,16 @@ const AICards = () => {
           )}
 
           <div className="flex w-full bg-white rounded-xl p-3 flex-col gap-4">
-            {uploadFiles.map((file) => (
-              <UploadFile
-                file={file}
-                key={file.name}
-                uploadFiles={uploadFiles}
-                setUploadFiles={setUploadFiles}
-              />
-            ))}
+            <div className="gap-x-2 flex">
+              {uploadFiles.map((file, index) => (
+                <UploadFile
+                  file={file}
+                  key={`${file.name}-${index}`}
+                  uploadFiles={uploadFiles}
+                  setUploadFiles={setUploadFiles}
+                />
+              ))}
+            </div>
             <div className="relative">
               <Textarea
                 rows={8}
@@ -166,7 +186,10 @@ const AICards = () => {
                   type="file"
                   ref={fileInputRef}
                   onChange={(e) =>
-                    setUploadFiles(Array.from(e.target.files || []))
+                    setUploadFiles([
+                      ...uploadFiles,
+                      ...Array.from(e.target.files || []),
+                    ])
                   }
                   multiple
                   hidden
@@ -200,7 +223,9 @@ const UploadFile = ({
       </div>
       <div
         onClick={() =>
-          setUploadFiles(uploadFiles.filter((f) => f.name !== file.name))
+          setUploadFiles(
+            uploadFiles.filter((f, index) => `${f.name}-${index}` !== `${file.name}-${index}`)
+          )
         }
         className="bg-gray-100 cursor-pointer rounded-full p-1 absolute -right-1 -top-1"
       >

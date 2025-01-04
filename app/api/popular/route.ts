@@ -16,14 +16,19 @@ export async function GET() {
       .from(sets)
       .where(
         and(
-          not(eq(sets.user_id, user.id)), // Sets not created by the user
-          sql`${user.id} != ANY(${sets.users_enrolled})` // User not enrolled in the set
+          not(eq(sets.user_id, user.id)), // Exclude sets created by the user
+          not(
+            sql`${user.id} = ANY("users_enrolled")` // Exclude sets where user is in `users_enrolled`
+          )
         )
       )
-      .orderBy(desc(sets.users_enrolled));
+      .orderBy(desc(sets.users_enrolled))
+      .execute();
 
-   
-    return new Response(JSON.stringify(popularSets), { status: 200 });
+    return new Response(
+      JSON.stringify(popularSets),
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return new Response("Failed to fetch popular sets", { status: 500 });

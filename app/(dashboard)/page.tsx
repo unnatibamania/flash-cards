@@ -15,6 +15,10 @@ export default function Home() {
     queryFn: () => fetch("/api/popular").then((res) => res.json()),
   });
 
+  console.log({
+    data
+  })
+
   return (
     <div className="flex h-full max-w-6xl gap-6 flex-col p-6">
       <div className="flex flex-col gap-4">

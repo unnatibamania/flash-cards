@@ -14,6 +14,10 @@ export async function POST(request: Request) {
 
     const { setId } = await request.json();
 
+    console.log({
+      setId
+    })
+
     const existingSet = await db
       .select()
       .from(sets)

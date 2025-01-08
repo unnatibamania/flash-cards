@@ -29,6 +29,7 @@ export async function GET() {
       JSON.stringify(popularSets),
       { status: 200 }
     );
+    
   } catch (error) {
     console.error(error);
     return new Response("Failed to fetch popular sets", { status: 500 });

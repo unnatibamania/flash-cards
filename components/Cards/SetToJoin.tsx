@@ -9,6 +9,7 @@ import axios from "axios";
 
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Pill } from "../Pill/Pill";
 
 export const SetToJoin = ({ set }: { set: SetData }) => {
   const router = useRouter();
@@ -36,8 +37,15 @@ export const SetToJoin = ({ set }: { set: SetData }) => {
         <h2 className="text-lg font-bold">{set.title}</h2>
         <p className="text-xs text-gray-500">{set.description}</p>
       </div>
-
-      <div className="flex items-center justify-between">
+      <div className=" flex gap-x-1">
+        {set.tags.map((title) => (
+          <Pill tag={title} onClick={() => {}} hasAction={false} key={title} />
+        ))}
+      </div>
+      <section className="flex items-center justify-between">
+        <div>
+          <p>43 cards</p>
+        </div>
         <div className="flex items-center -space-x-3 relative">
           <Avatar>
             <AvatarImage src="https://github.com/itsnitinr.png" />
@@ -59,16 +67,18 @@ export const SetToJoin = ({ set }: { set: SetData }) => {
             <AvatarFallback>+4</AvatarFallback>
           </Avatar>
         </div>
-
+      </section>
+      <div className="flex items-center justify-between">
+        <div>
+          Created by <span className="font-bold">Nitin</span>
+        </div>
         <Button
           variant="outline"
           onClick={() => {
             handleJoin();
           }}
         >
-          {
-            isLoading ? <Loader2 className="animate-spin" /> :null
-          } Join
+          {isLoading ? <Loader2 className="animate-spin" /> : null} Join
         </Button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { SetData } from "@/types/set";
 import axios from "axios";
@@ -8,28 +8,24 @@ import { CardData } from "@/types/card";
 import { useQuery } from "@tanstack/react-query";
 
 import { Progress } from "../ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
-export const SetCard = ({ set,  }: { set: SetData; }) => {
+export const SetCard = ({ set }: { set: SetData }) => {
   const router = useRouter();
- 
+
   const { data: cardsList } = useQuery({
     queryKey: ["cards", set.id],
-    queryFn: () =>
-      axios.get(`/api/card/${set.id}`).then((res) => res.data),
+    queryFn: () => axios.get(`/api/card/${set.id}`).then((res) => res.data),
   });
 
   const visitedCards = cardsList?.filter((card: CardData) => card.is_visited);
 
   const percentage = (visitedCards?.length / cardsList?.length) * 100;
-  
- 
+
   return (
-    <div
-      className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4"
-    >
+    <div className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4">
       <div className="flex flex-col">
         <h2 className="text-lg font-bold">{set?.title}</h2>
         <p className="text-xs text-gray-500">{set?.description}</p>
@@ -49,25 +45,19 @@ export const SetCard = ({ set,  }: { set: SetData; }) => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center -space-x-3 relative">
-          <Avatar>
-            <AvatarImage src="https://github.com/itsnitinr.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          {set.users_enrolled.slice(0, 4).map((user) => (
+            <Avatar key={user.id}>
+              <AvatarImage src={user.profile_picture} />
+            </Avatar>
+          ))}
 
-          <Avatar className=" ">
-            <AvatarImage src="https://github.com/ameybh.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-
-          <Avatar className="">
-            <AvatarImage src="https://github.com/unnatibamania.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-
-          <Avatar className="">
-            {/* <AvatarImage src="https://github.com/.png" /> */}
-            <AvatarFallback>+4</AvatarFallback>
-          </Avatar>
+          {
+            set.users_enrolled.length > 4 ? (
+              <Avatar className="bg-gray-200 text-gray-500">
+                <AvatarFallback>{set.users_enrolled.length - 4}</AvatarFallback>
+              </Avatar>
+            ) : null
+          }
         </div>
 
         <Button

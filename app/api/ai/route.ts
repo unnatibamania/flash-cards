@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prompt } from "@/utils/ai";
-import { OpenAI, } from "openai";
+import { OpenAI } from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
 
 async function waitForRunCompletion(thread, run) {
   while (true) {
@@ -13,61 +12,66 @@ async function waitForRunCompletion(thread, run) {
       thread.id,
       run.id
     );
-    
-    if (runStatus.status === 'completed') {
+
+    if (runStatus.status === "completed") {
       return runStatus;
-    } else if (runStatus.status === 'failed') {
-      throw new Error('Run failed');
+    } else if (runStatus.status === "failed") {
+      throw new Error("Run failed");
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }
 
-
 export async function POST(request: NextRequest) {
-  const { fileId, inputText } = await request.json();
+  const { fileId, inputText, transcript } = await request.json();
   let assistant, thread;
 
   try {
-    // Create assistant with the file
-    assistant = await openai.beta.assistants.create({
+    // Create assistant with appropriate configuration based on input
+    const assistantConfig = {
       name: "Flashcard Generator",
-      instructions: prompt(inputText),
-      model: "gpt-4o-mini", // Updated model
-      tools: [{ type: "file_search" }],
-      // attachments: [fileId]
-       // Changed to retrieval
-    });
+      instructions: prompt(inputText, transcript),
+      model: "gpt-4-turbo-preview",
+      ...(fileId ? {
+        tools: [{ type: "file_search" }]
+      } : {})
+    };
+
+    assistant = await openai.beta.assistants.create(assistantConfig);
 
     // Create thread
     thread = await openai.beta.threads.create();
 
-    // Add message to thread (simplified)
-    await openai.beta.threads.messages.create(thread.id, {
+    // Add message to thread with or without file attachment
+    const messageConfig = {
       role: "user",
-      content: "Generate flashcards from the uploaded PDF",
-      attachments: [{
-        file_id: fileId,
-        tools: [{
-          type: "file_search",
+      content: fileId 
+        ? "Generate flashcards from the uploaded PDF" 
+        : `Generate flashcards about: ${inputText}`,
+      ...(fileId ? {
+        attachments: [{
+          file_id: fileId,
+          tools: [{ type: "file_search" }]
         }]
-      }]
-    });
+      } : {})
+    };
+
+    await openai.beta.threads.messages.create(thread.id, messageConfig);
 
     // Run the assistant
     const run = await openai.beta.threads.runs.create(thread.id, {
-      assistant_id: assistant.id
+      assistant_id: assistant.id,
     });
 
     await waitForRunCompletion(thread, run);
 
     // Get messages
     const messages = await openai.beta.threads.messages.list(thread.id);
-    const lastMessage = messages.data.find(msg => msg.role === 'assistant');
+    const lastMessage = messages.data.find((msg) => msg.role === "assistant");
 
     if (!lastMessage) {
-      throw new Error('No response from assistant');
+      throw new Error("No response from assistant");
     }
 
     // Clean up

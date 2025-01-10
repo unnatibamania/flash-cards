@@ -6,7 +6,7 @@ export const openai = new OpenAI({
 });
 
 
-export const prompt =  (inputText: string)=>{
+export const prompt =  (inputText: string, transcript: string)=>{
     return ` You are an educational flashcard generator specializing in creating high-quality study materials.
 
     CONTENT GUIDELINES:
@@ -37,6 +37,9 @@ export const prompt =  (inputText: string)=>{
     - Use clear, unambiguous language
     - Avoid cultural or regional biases
     - Include only widely accepted academic content
+
+    If the user provides a transcript, use it to generate the flashcards.
+    ${transcript}
 
     Consider additional context from the following text given by the user:
     ${inputText}

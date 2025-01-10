@@ -44,10 +44,24 @@ const AICards = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [transcript, setTranscript] = useState<string>("");
 
   const [youtubeUrl, setYoutubeUrl] = useState<string>("");
 
   const { toast } = useToast();
+
+  const handleUploadFile = async () => {
+    if (uploadFiles.length === 0) {
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", uploadFiles[0]);
+
+    const { data } = await axios.post("/api/upload", formData);
+
+    return data.fileId;
+  };
 
   const handleSend = async () => {
     const totalFileSize = uploadFiles.reduce((acc, file) => acc + file.size, 0);
@@ -64,36 +78,34 @@ const AICards = () => {
     // return;
     setIsLoading(true);
 
-    if (uploadFiles.length > 0) {
-      const formData = new FormData();
-      formData.append("file", uploadFiles[0]);
+    const fileId = await handleUploadFile();
 
-      const { data } = await axios.post("/api/upload", formData);
+    console.log({ fileId });
 
-      const { data: aiData } = await axios.post("/api/ai", {
-        fileId: data.fileId,
-        inputText,
-      });
+    const { data: aiData } = await axios.post("/api/ai", {
+      fileId,
+      inputText,
+      transcript: transcript || "",
+    });
 
-      const parsedData = JSON.parse(aiData[0].text.value);
+    const parsedData = JSON.parse(aiData[0].text.value);
 
-      form.setValue("title", parsedData.set_title);
-      form.setValue("description", parsedData.set_description);
-      form.setValue("tags", parsedData.set_tags);
+    form.setValue("title", parsedData.set_title);
+    form.setValue("description", parsedData.set_description);
+    form.setValue("tags", parsedData.set_tags);
 
-      const transformedCards = parsedData.set_cards.map(
-        (card: CardData, index: number) => ({
-          id: uuidv4(),
-          order: index,
-          question: card.question,
-          answer: card.answer,
-          tags: card.tags,
-        })
-      );
+    const transformedCards = parsedData.set_cards.map(
+      (card: CardData, index: number) => ({
+        id: uuidv4(),
+        order: index,
+        question: card.question,
+        answer: card.answer,
+        tags: card.tags,
+      })
+    );
 
-      setCards(transformedCards);
-      setCurrentIndex(0); // Reset to first card
-    }
+    setCards(transformedCards);
+    setCurrentIndex(0); // Reset to first card
 
     setUploadFiles([]);
 
@@ -157,6 +169,8 @@ const AICards = () => {
                           youtubeUrl
                         );
                         console.log({ transcript });
+                        setTranscript(transcript as string);
+                        // console.log({ transcript });
                       }
                     }}
                   />

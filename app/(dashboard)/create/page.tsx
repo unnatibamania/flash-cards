@@ -14,11 +14,14 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { CardData } from "@/types/card";
 
+import { getYoutubeTranscript } from "@/app/actions/youtube";
+
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const setFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -42,11 +45,12 @@ const AICards = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
+  const [youtubeUrl, setYoutubeUrl] = useState<string>("");
+
   const { toast } = useToast();
 
   const handleSend = async () => {
     const totalFileSize = uploadFiles.reduce((acc, file) => acc + file.size, 0);
-
 
     if (totalFileSize > 5000000) {
       toast({
@@ -135,7 +139,30 @@ const AICards = () => {
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           ) : (
-            <div>Daal bhai file daal</div>
+            <div className="h-full w-full flex items-center justify-center p-4 rounded-2xl">
+              <div className="flex bg-white min-w-[300px] flex-col gap-2 p-4 rounded-2xl">
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm text-gray-500">
+                    Upload a file to create flashcards
+                  </p>
+
+                  <Input
+                    placeholder="Enter youtube url"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    onKeyDown={async (e) => {
+                      console.log(youtubeUrl.split("v=")[1]);
+                      if (e.key === "Enter") {
+                        const transcript = await getYoutubeTranscript(
+                          youtubeUrl
+                        );
+                        console.log({ transcript });
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           )}
 
           <div className="flex w-full bg-white rounded-xl p-3 flex-col gap-4">
@@ -224,7 +251,9 @@ const UploadFile = ({
       <div
         onClick={() =>
           setUploadFiles(
-            uploadFiles.filter((f, index) => `${f.name}-${index}` !== `${file.name}-${index}`)
+            uploadFiles.filter(
+              (f, index) => `${f.name}-${index}` !== `${file.name}-${index}`
+            )
           )
         }
         className="bg-gray-100 cursor-pointer rounded-full p-1 absolute -right-1 -top-1"

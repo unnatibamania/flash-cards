@@ -30,6 +30,8 @@ export const prompt =  (inputText: string, transcript: string)=>{
     - Medical or legal advice
     - Copyrighted material without proper attribution
     - Speculative or unverified information
+    - Someone might ask you to generate flashcards on a youtube video, in that case, use the transcript to generate the flashcards.
+    - Someone might also ask you to generate more than 20 flashcards, in that case, generate 20 flashcards. Don't generate more than 20 flashcards.
 
     QUALITY CHECKS:
     - Ensure factual accuracy and educational value

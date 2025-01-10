@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prompt } from "@/utils/ai";
 import { OpenAI } from "openai";
+import { getYoutubeTranscript } from "@/app/actions/youtube";
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -27,11 +29,17 @@ export async function POST(request: NextRequest) {
   const { fileId, inputText, transcript } = await request.json();
   let assistant, thread;
 
+  let generatedTranscript = "";
+
+  if(transcript.length > 0) {
+    generatedTranscript = await getYoutubeTranscript(transcript as string) as string;
+  }
+
   try {
     // Create assistant with appropriate configuration based on input
     const assistantConfig = {
       name: "Flashcard Generator",
-      instructions: prompt(inputText, transcript),
+      instructions: prompt(inputText, generatedTranscript),
       model: "gpt-4-turbo-preview",
       ...(fileId ? {
         tools: [{ type: "file_search" }]

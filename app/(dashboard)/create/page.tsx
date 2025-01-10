@@ -14,7 +14,6 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { CardData } from "@/types/card";
 
-import { getYoutubeTranscript } from "@/app/actions/youtube";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +43,6 @@ const AICards = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPublic, setIsPublic] = useState<boolean>(false);
-  const [transcript, setTranscript] = useState<string>("");
 
   const [youtubeUrl, setYoutubeUrl] = useState<string>("");
 
@@ -78,17 +76,14 @@ const AICards = () => {
     // return;
     setIsLoading(true);
 
-    if (youtubeUrl.length > 0) {
-      const transcript = await getYoutubeTranscript(youtubeUrl);
-      setTranscript(transcript as string);
-    }
-
+   
+    // return;
     const fileId = await handleUploadFile();
 
     const { data: aiData } = await axios.post("/api/ai", {
       fileId,
       inputText,
-      transcript: transcript || "",
+      transcript: youtubeUrl,
     });
 
     const parsedData = JSON.parse(aiData[0].text.value);
@@ -114,6 +109,7 @@ const AICards = () => {
 
     setIsLoading(false);
     setInputText("");
+    setYoutubeUrl("");
   };
 
   const form = useForm<SetFormValues>({

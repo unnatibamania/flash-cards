@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Pill } from "../Pill/Pill";
 
+
 export const SetToJoin = ({ set }: { set: SetData }) => {
   const router = useRouter();
 
@@ -47,7 +48,21 @@ export const SetToJoin = ({ set }: { set: SetData }) => {
           <p>43 cards</p>
         </div>
         <div className="flex items-center -space-x-3 relative">
-          <Avatar>
+          {set.users_enrolled.slice(0, 3).map((user) => (
+            <Avatar key={user.id}>
+              <AvatarImage src={user.profile_picture} />
+              {/* <AvatarFallback>{user.id.slice(0, 2)}</AvatarFallback> */}
+            </Avatar>
+          ))}
+
+          {
+            set.users_enrolled.length > 3 ? (
+              <Avatar>
+                <AvatarFallback>{set.users_enrolled.length}</AvatarFallback>
+              </Avatar>
+            ) : null
+          }
+          {/* <Avatar>
             <AvatarImage src="https://github.com/itsnitinr.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
@@ -63,9 +78,8 @@ export const SetToJoin = ({ set }: { set: SetData }) => {
           </Avatar>
 
           <Avatar className="">
-            {/* <AvatarImage src="https://github.com/.png" /> */}
             <AvatarFallback>+4</AvatarFallback>
-          </Avatar>
+          </Avatar> */}
         </div>
       </section>
       <div className="flex items-center justify-between">

@@ -78,9 +78,12 @@ const AICards = () => {
     // return;
     setIsLoading(true);
 
-    const fileId = await handleUploadFile();
+    if (youtubeUrl.length > 0) {
+      const transcript = await getYoutubeTranscript(youtubeUrl);
+      setTranscript(transcript as string);
+    }
 
-    console.log({ fileId });
+    const fileId = await handleUploadFile();
 
     const { data: aiData } = await axios.post("/api/ai", {
       fileId,
@@ -151,45 +154,28 @@ const AICards = () => {
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           ) : (
-            <div className="h-full w-full flex items-center justify-center p-4 rounded-2xl">
-              <div className="flex bg-white min-w-[300px] flex-col gap-2 p-4 rounded-2xl">
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-500">
-                    Upload a file to create flashcards
-                  </p>
-
-                  <Input
-                    placeholder="Enter youtube url"
-                    value={youtubeUrl}
-                    onChange={(e) => setYoutubeUrl(e.target.value)}
-                    onKeyDown={async (e) => {
-                      console.log(youtubeUrl.split("v=")[1]);
-                      if (e.key === "Enter") {
-                        const transcript = await getYoutubeTranscript(
-                          youtubeUrl
-                        );
-                        console.log({ transcript });
-                        setTranscript(transcript as string);
-                        // console.log({ transcript });
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+            <div className="h-full w-full flex items-center justify-center p-4 rounded-2xl"></div>
           )}
 
           <div className="flex w-full bg-white rounded-xl p-3 flex-col gap-4">
-            <div className="gap-x-2 flex">
-              {uploadFiles.map((file, index) => (
-                <UploadFile
-                  file={file}
-                  key={`${file.name}-${index}`}
-                  uploadFiles={uploadFiles}
-                  setUploadFiles={setUploadFiles}
-                />
-              ))}
-            </div>
+            <Input
+              placeholder="Enter youtube url"
+              value={youtubeUrl}
+              className="w-80"
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+            />
+            {uploadFiles.length > 0 ? (
+              <div className="gap-x-2 flex">
+                {uploadFiles.map((file, index) => (
+                  <UploadFile
+                    file={file}
+                    key={`${file.name}-${index}`}
+                    uploadFiles={uploadFiles}
+                    setUploadFiles={setUploadFiles}
+                  />
+                ))}
+              </div>
+            ) : null}
             <div className="relative">
               <Textarea
                 rows={8}
@@ -199,11 +185,12 @@ const AICards = () => {
                 placeholder="Create flashcards on Newton's three laws of motion..."
               />
 
-              <div className="flex absolute right-4 gap-4 bottom-4 justify-end">
+              <div className="flex absolute right-4 gap-4 bottom-4 w-max justify-end">
                 <Button
                   disabled={inputText.length === 0 || isLoading}
                   size="icon"
                   variant="outline"
+                  className="shrink-0"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Paperclip className="h-4 w-4 -rotate-45" />
@@ -212,7 +199,7 @@ const AICards = () => {
                 <Button
                   type="button"
                   size="icon"
-                  className=""
+                  className="shrink-0"
                   disabled={inputText.length === 0 || isLoading}
                   onClick={handleSend}
                 >

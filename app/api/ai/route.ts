@@ -3,12 +3,12 @@ import { prompt } from "@/utils/ai";
 import { OpenAI } from "openai";
 import { getYoutubeTranscript } from "@/app/actions/youtube";
 
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function waitForRunCompletion(thread, run) {
+
+async function waitForRunCompletion(thread: any, run: any) {
   while (true) {
     const runStatus = await openai.beta.threads.runs.retrieve(
       thread.id,
@@ -31,8 +31,10 @@ export async function POST(request: NextRequest) {
 
   let generatedTranscript = "";
 
-  if(transcript.length > 0) {
-    generatedTranscript = await getYoutubeTranscript(transcript as string) as string;
+  if (transcript.length > 0) {
+    generatedTranscript = (await getYoutubeTranscript(
+      transcript as string
+    )) as string;
   }
 
   try {
@@ -41,11 +43,14 @@ export async function POST(request: NextRequest) {
       name: "Flashcard Generator",
       instructions: prompt(inputText, generatedTranscript),
       model: "gpt-4-turbo-preview",
-      ...(fileId ? {
-        tools: [{ type: "file_search" }]
-      } : {})
+      ...(fileId
+        ? {
+            tools: [{ type: "file_search" }],
+          }
+        : {}),
     };
 
+    // @ts-expect-error: TODO: fix this
     assistant = await openai.beta.assistants.create(assistantConfig);
 
     // Create thread
@@ -54,16 +59,22 @@ export async function POST(request: NextRequest) {
     // Add message to thread with or without file attachment
     const messageConfig = {
       role: "user",
-      content: fileId 
-        ? "Generate flashcards from the uploaded PDF" 
+      content: fileId
+        ? "Generate flashcards from the uploaded PDF"
         : `Generate flashcards about: ${inputText}`,
-      ...(fileId ? {
-        attachments: [{
-          file_id: fileId,
-          tools: [{ type: "file_search" }]
-        }]
-      } : {})
+      ...(fileId
+        ? {
+            attachments: [
+              {
+                file_id: fileId,
+                tools: [{ type: "file_search" }],
+              },
+            ],
+          }
+        : {}),
     };
+
+    // @ts-expect-error: TODO: fix thiss
 
     await openai.beta.threads.messages.create(thread.id, messageConfig);
 

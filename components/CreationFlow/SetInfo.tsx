@@ -8,9 +8,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import { Pill } from "@/components/Pill/Pill";
+
 import { SetFormValues } from "@/app/(dashboard)/create/page";
 
 export const SetInfo = ({ form }: { form: UseFormReturn<SetFormValues> }) => {
+  const tags = form.watch("tags");
+
   return (
     <section className="flex  flex-col gap-4">
       <FormField
@@ -52,15 +56,18 @@ export const SetInfo = ({ form }: { form: UseFormReturn<SetFormValues> }) => {
         )}
       />
       <div className="flex flex-wrap gap-2">
-        {/* {tags.map((tag) => (
-      <Pill
-        key={tag}
-        tag={tag}
-        onClick={() => {
-          setTags(tags.filter((t) => t !== tag));
-        }}
-      />
-    ))} */}
+        {tags.map((tag) => (
+          <Pill
+            key={tag}
+            tag={tag}
+            onClick={() => {
+              form.setValue(
+                "tags",
+                tags.filter((t) => t !== tag)
+              );
+            }}
+          />
+        ))}
       </div>
 
       {/* <Button onClick={handleCreateSet}>Create Set</Button> */}

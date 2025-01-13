@@ -33,7 +33,7 @@ const MySets = () => {
       </div>
       <div className="grid grid-cols-3 gap-2">
         {setList?.map((set: SetData, index: number) => (
-         <SetCard set={set} index={index} key={index} />
+         <SetCard set={set}  key={index} />
         ))}
       </div>
     </div>

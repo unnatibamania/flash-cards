@@ -31,7 +31,7 @@ const setFormSchema = z.object({
 export type SetFormValues = z.infer<typeof setFormSchema>;
 
 const AICards = () => {
-  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,12 +49,12 @@ const AICards = () => {
   const { toast } = useToast();
 
   const handleUploadFile = async () => {
-    if (uploadFiles.length === 0) {
+    if (!uploadFile) {
       return null;
     }
 
     const formData = new FormData();
-    formData.append("file", uploadFiles[0]);
+    formData.append("file", uploadFile);
 
     const { data } = await axios.post("/api/upload", formData);
 
@@ -62,9 +62,9 @@ const AICards = () => {
   };
 
   const handleSend = async () => {
-    const totalFileSize = uploadFiles.reduce((acc, file) => acc + file.size, 0);
+    const totalFileSize = uploadFile?.size || 0;
 
-    if (totalFileSize > 5000000) {
+    if (totalFileSize > 1000000) {
       toast({
         title: "File size too large",
         description: "Please upload a smaller file",
@@ -105,7 +105,7 @@ const AICards = () => {
     setCards(transformedCards);
     setCurrentIndex(0); // Reset to first card
 
-    setUploadFiles([]);
+    setUploadFile(null);
 
     setIsLoading(false);
     setInputText("");
@@ -160,16 +160,13 @@ const AICards = () => {
               className="w-80"
               onChange={(e) => setYoutubeUrl(e.target.value)}
             />
-            {uploadFiles.length > 0 ? (
+            {uploadFile ? (
               <div className="gap-x-2 flex">
-                {uploadFiles.map((file, index) => (
-                  <UploadFile
-                    file={file}
-                    key={`${file.name}-${index}`}
-                    uploadFiles={uploadFiles}
-                    setUploadFiles={setUploadFiles}
-                  />
-                ))}
+                <UploadFile
+                  file={uploadFile}
+                  key={uploadFile.name}
+                  setUploadFile={setUploadFile}
+                />
               </div>
             ) : null}
             <div className="relative">
@@ -210,10 +207,7 @@ const AICards = () => {
                   type="file"
                   ref={fileInputRef}
                   onChange={(e) =>
-                    setUploadFiles([
-                      ...uploadFiles,
-                      ...Array.from(e.target.files || []),
-                    ])
+                    setUploadFile(e.target.files?.[0] || null)
                   }
                   multiple
                   hidden
@@ -229,12 +223,10 @@ const AICards = () => {
 
 const UploadFile = ({
   file,
-  setUploadFiles,
-  uploadFiles,
+  setUploadFile,
 }: {
   file: File;
-  setUploadFiles: (files: File[]) => void;
-  uploadFiles: File[];
+  setUploadFile: (file: File | null) => void;
 }) => {
   return (
     <div
@@ -246,13 +238,7 @@ const UploadFile = ({
         <p className="text-sm">{file.name}</p>
       </div>
       <div
-        onClick={() =>
-          setUploadFiles(
-            uploadFiles.filter(
-              (f, index) => `${f.name}-${index}` !== `${file.name}-${index}`
-            )
-          )
-        }
+        onClick={() => setUploadFile(null)}
         className="bg-gray-100 cursor-pointer rounded-full p-1 absolute -right-1 -top-1"
       >
         <X className="h-2 w-2" />

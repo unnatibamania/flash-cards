@@ -6,9 +6,9 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const id = (await params).id;
 
   const cardsList = await db.select().from(cards).where(eq(cards.set_id, id));
 

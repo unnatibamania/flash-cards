@@ -14,6 +14,8 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { CardData } from "@/types/card";
 
+import { EmptyCardView } from "@/components/CreationFlow/EmptyCardView";
+
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -150,7 +152,9 @@ const AICards = () => {
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           ) : (
-            <div className="h-full w-full flex items-center justify-center p-4 rounded-2xl"></div>
+            <div className="h-full w-full flex items-center justify-center p-4 rounded-2xl">
+              <EmptyCardView  />
+            </div>
           )}
 
           <div className="flex w-full bg-white rounded-xl p-3 flex-col gap-4">

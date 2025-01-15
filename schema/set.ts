@@ -15,5 +15,6 @@ export const sets = pgTable("set", {
   .array()
   .notNull()
   .$type<Array<{ id: string; profile_picture: string }>>()
-  .default([])
+  .default([]),
+  // prompt: text("prompt"),
 });

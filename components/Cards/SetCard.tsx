@@ -11,9 +11,15 @@ import { Progress } from "../ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { Delete } from "../alert/Delete";
+
+import { useState } from "react";
 
 export const SetCard = ({ set }: { set: SetData }) => {
   const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: cardsList } = useQuery({
     queryKey: ["cards", set.id],
@@ -23,6 +29,14 @@ export const SetCard = ({ set }: { set: SetData }) => {
   const visitedCards = cardsList?.filter((card: CardData) => card.is_visited);
 
   const percentage = (visitedCards?.length / cardsList?.length) * 100;
+
+  const deleteSet = async () => {
+    try {
+      await axios.delete(`/api/draft/${set.id}`);
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   return (
     <div className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4">
@@ -51,24 +65,40 @@ export const SetCard = ({ set }: { set: SetData }) => {
             </Avatar>
           ))}
 
-          {
-            set.users_enrolled.length > 4 ? (
-              <Avatar className="bg-gray-200 text-gray-500">
-                <AvatarFallback>{set.users_enrolled.length - 4}</AvatarFallback>
-              </Avatar>
-            ) : null
-          }
+          {set.users_enrolled.length > 4 ? (
+            <Avatar className="bg-gray-200 text-gray-500">
+              <AvatarFallback>{set.users_enrolled.length - 4}</AvatarFallback>
+            </Avatar>
+          ) : null}
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => {
-            router.push(`/set/${set.id}`);
-          }}
-        >
-          Continue
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              // await deleteSet();
+              setOpen(true);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            onClick={() => {
+              router.push(`/set/${set.id}`);
+            }}
+          >
+            Continue
+          </Button>
+        </div>
       </div>
+
+      <Delete
+        open={open}
+        setOpen={setOpen}
+        isLoading={isLoading}
+        deleteDraft={deleteSet}
+        setIsLoading={setIsLoading}
+      />
     </div>
   );
 };

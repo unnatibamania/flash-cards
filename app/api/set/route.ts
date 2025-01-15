@@ -21,19 +21,23 @@ export async function POST(request: Request) {
     const newSet = await db
       .insert(sets)
       .values({
-        title: title.length > 0 ? title : "Untitled",
-        description,
+        title: title?.length > 0 ? title : "Untitled",
+        description: description || "",
         user_id: user.id,
         created_at: new Date(),
         updated_at: new Date(),
-        is_draft: is_draft,
-        is_public: is_public,
+        is_draft: is_draft || false,
+        is_public: is_public || false,
         id: randomUUID(),
-        tags,
+        tags: tags || [],
+        created_by: {
+          id: user.id,
+          profile_picture: user.imageUrl || "",
+          name: user.fullName || "",
+        },
     })
     .returning();
 
-    console.log({newSet})
 
     return new Response(JSON.stringify(newSet), { status: 200 });
   } catch (error) {

@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
 
 export const sets = pgTable("set", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,5 +16,10 @@ export const sets = pgTable("set", {
   .notNull()
   .$type<Array<{ id: string; profile_picture: string }>>()
   .default([]),
+  created_by: jsonb("created_by").$type<{
+    id: string;
+    profile_picture: string;
+    name: string;
+  }>(),
   // prompt: text("prompt"),
 });

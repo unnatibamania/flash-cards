@@ -11,6 +11,11 @@ export type SetData = {
   tags: string[];
   users_enrolled: { id: string; profile_picture: string }[];
   is_bookmarked: boolean;
+  created_by: {
+    id: string;
+    profile_picture: string;
+    name: string;
+  };
 };
 
 export const formSetSchema: ZodType<SetData> = z.object({
@@ -29,4 +34,9 @@ export const formSetSchema: ZodType<SetData> = z.object({
       profile_picture: z.string(),
     })
   ),
+  created_by: z.object({
+    id: z.string(),
+    profile_picture: z.string(),
+    name: z.string(),
+  }),
 });

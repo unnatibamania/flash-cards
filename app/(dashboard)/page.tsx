@@ -2,11 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { SetCard } from "@/components/Cards/SetCard";
 
 import { SetToJoin } from "@/components/Cards/SetToJoin";
 
 import { SetData } from "@/types/set";
+import { RecentCard } from "@/components/Cards/RecentCard";
 
 export default function Home() {
 
@@ -31,7 +31,7 @@ export default function Home() {
 
         <div className="grid grid-cols-3 gap-2">
           {data?.map((set: SetData, index: number) => (
-            <SetCard set={set} key={index} />
+            <RecentCard set={set} key={index} />
           ))}
         </div>
       </div>

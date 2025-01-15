@@ -150,7 +150,12 @@ const CardSet = () => {
             <Button
               disabled={currentCardIndex === cards.length - 1}
               onClick={async () => {
+                if (cards[currentCardIndex]?.is_visited) return;
                 await handleCardVisited(cards[currentCardIndex].id);
+                console.log({ currentCardIndex, length: cards.length });
+                if (currentCardIndex + 1 === cards.length - 1) {
+                  await handleCardVisited(cards[currentCardIndex + 1].id);
+                }
                 goToNextCard();
               }}
               className="rounded-full"

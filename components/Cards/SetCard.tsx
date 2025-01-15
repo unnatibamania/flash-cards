@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { CardData } from "@/types/card";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Progress } from "../ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
@@ -13,10 +13,13 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { Delete } from "../alert/Delete";
 
+import { Bookmark, } from "lucide-react";
+
 import { useState } from "react";
 
 export const SetCard = ({ set }: { set: SetData }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,11 +41,42 @@ export const SetCard = ({ set }: { set: SetData }) => {
     }
   };
 
+  const toggleBookmark = async () => {
+    // Get the current query client
+    const previousSets = queryClient.getQueryData<SetData[]>(["sets"]);
+    
+    // Optimistically update the UI
+    queryClient.setQueryData<SetData[]>(["sets"], (old) => 
+      old?.map((s) => 
+        s.id === set.id ? { ...s, is_bookmarked: !s.is_bookmarked } : s
+      )
+    );
+
+    try {
+      await axios.patch(`/api/set/bookmark/${set.id}`);
+    } catch (error) {
+      // On error, rollback to the previous state
+      queryClient.setQueryData(["sets"], previousSets);
+      console.error("Failed to toggle bookmark:", error);
+    }
+  };
+
   return (
     <div className="flex cursor-pointer border rounded-2xl p-4 flex-col gap-4">
-      <div className="flex flex-col">
-        <h2 className="text-lg font-bold">{set?.title}</h2>
-        <p className="text-xs text-gray-500">{set?.description}</p>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col max-w-[calc(100%-48px)]">
+          <h2 className="text-lg font-bold">{set?.title}</h2>
+          <p className="text-xs text-gray-500">{set?.description}</p>
+        </div>
+
+        <Bookmark 
+          size={24} 
+          className={`shrink-0 cursor-pointer ${set.is_bookmarked ? 'fill-current' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleBookmark();
+          }} 
+        />
       </div>
 
       <div className="flex flex-col gap-1">

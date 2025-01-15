@@ -10,6 +10,7 @@ export type SetData = {
   is_draft: boolean;
   tags: string[];
   users_enrolled: { id: string; profile_picture: string }[];
+  is_bookmarked: boolean;
 };
 
 export const formSetSchema: ZodType<SetData> = z.object({
@@ -21,6 +22,7 @@ export const formSetSchema: ZodType<SetData> = z.object({
   updated_at: z.date(),
   is_draft: z.boolean(),
   tags: z.array(z.string()),
+  is_bookmarked: z.boolean(),
   users_enrolled: z.array(
     z.object({
       id: z.string(),

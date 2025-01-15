@@ -10,7 +10,7 @@ export const sets = pgTable("set", {
   updated_at: timestamp("updated_at").defaultNow(),
   user_id: text("user_id").notNull(),
   tags: text("tags").array(),
-  is_bookmarked: boolean("is_bookmarked"),
+  is_bookmarked: boolean("is_bookmarked").default(false),
   users_enrolled: text("users_enrolled")
   .array()
   .notNull()
